@@ -1,0 +1,10 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\joeyj\\source\\repos\\gfg beginner projects\\gfg beginner projects\\module.ixx",
+        "ProvidedModule": "Module",
+        "Includes": [],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
