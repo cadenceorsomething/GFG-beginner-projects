@@ -1,13 +1,17 @@
 #include <iostream>
-#include <string>
-#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <unordered_set>
 #include "beginner_funcs.h"
 
 
-
+using namespace std;
 
 int main() {
-	projects::input_vector();
+	rock_paper_scissors::run();
+
+
+
 
 	return 0;
 }

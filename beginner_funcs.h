@@ -3,6 +3,9 @@
 
 void is_working();
 
+
+// 5/21/2025: CGPA CALCULATOR
+
 class course {
 private:
 	std::string name;
@@ -15,7 +18,14 @@ public:
 	int get_hours();
 	double get_grade();
 };
+namespace CGPA_calculator {
+	void run();         // Function prototype
+}
 
-namespace projects {
-	void input_vector();         // Function prototype
+
+
+// 5/22/2025: ROCK PAPER SCISSORS
+
+namespace rock_paper_scissors {
+	void run();
 }
