@@ -29,3 +29,13 @@ namespace CGPA_calculator {
 namespace rock_paper_scissors {
 	void run();
 }
+
+
+
+// 5/23/2025: WEIRD CASINO GAME THING
+
+namespace guessing_game {
+	
+	void run();
+}
+
