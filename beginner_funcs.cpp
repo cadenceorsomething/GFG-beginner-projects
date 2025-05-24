@@ -12,9 +12,13 @@
 void is_working() {
 	std::cout << "yep its working." << std::endl;
 }
+const int internal_number = 99;
+
 
 const int MAX_COURSES = 5;
 using std::cout, std::cin, std::endl, std::string;
+
+
 
 // 5/21/2025: CGPA CALCULATOR
 
@@ -81,6 +85,8 @@ namespace CGPA_calculator {
 		cout << "CGPA: " << cgpa << endl;
 	}
 }
+
+
 
 // 5/22/2025: ROCK PAPER SCISSORS
 
@@ -261,3 +267,59 @@ namespace guessing_game {
 	}
 }
 
+
+
+// 5/24/2025: WEIRD CASINO GAME THING BUT WITH SoC
+
+namespace SoC {
+	int guess::score = 0;
+	
+	guess::guess(int difficulty) {
+		/*a vector determining upperbounds based on difficulty*/
+		std::vector <int> bounds = { 2,4,6 };
+		upper_bound = bounds[difficulty - 1];
+
+		/*a random seed and a rand() that generates numers from 1 to upperbounds*/
+		srand((unsigned int)time(NULL));
+		secret_number = rand() % upper_bound + 1;
+	}
+	
+	void guess::ts_so_gurt		() {
+		cout << "yo" << endl;
+	}
+	int  guess::get_upper_bound	() const {
+		return upper_bound;
+	}
+	bool guess::check_guess		(int guess) {
+		if (guess == secret_number) {
+			std::vector <int> rewards = { 30,90,270 };
+			score += rewards[upper_bound / 2 - 1];
+			return true;
+		}
+		return false;
+	}
+	int guess::get_score		() const {
+		return score;
+	}
+
+	void play_game() {
+		int difficulty;
+		cout << "choose difficulty 1-3:";
+		cin >> difficulty;
+
+		guess game(difficulty);
+
+		int guess;
+		cout << "pick a number between 1 and " << game.get_upper_bound() << ": ";
+		cin >> guess;
+
+		if (game.check_guess(guess))
+			cout << "YOU WIN! score: " << game.get_score() << ". " << endl;
+		else
+			cout << "you lose :( try again later!" << endl;
+	}
+}
+/*CAD PLEASE SEPERATE INOUT FROM OUTPUT AND MAKE THIS CLEANER OKAY?*/
+
+
+// 5/25/2025: 

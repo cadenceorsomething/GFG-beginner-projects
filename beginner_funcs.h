@@ -2,7 +2,7 @@
 #include <string>
 
 void is_working();
-
+extern const int internal_number;
 
 // 5/21/2025: CGPA CALCULATOR
 
@@ -23,7 +23,6 @@ namespace CGPA_calculator {
 }
 
 
-
 // 5/22/2025: ROCK PAPER SCISSORS
 
 namespace rock_paper_scissors {
@@ -39,3 +38,20 @@ namespace guessing_game {
 	void run();
 }
 
+namespace SoC {
+	class guess {
+	private:
+		int secret_number;
+		int upper_bound;
+	public:
+		static int score;
+		guess(int);
+
+		void ts_so_gurt			();
+		int  get_upper_bound	() const;
+		bool check_guess		(int);
+		int  get_score			() const;
+	};
+
+	void play_game();
+}
