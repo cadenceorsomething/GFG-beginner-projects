@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+using namespace std;
 
 void is_working();
 extern const int internal_number;
@@ -56,4 +57,9 @@ namespace SoC {
 	int get_difficulty();
 
 	void play_game();
+}
+
+
+namespace calculator {
+	string remove_spaces(const string& str);
 }

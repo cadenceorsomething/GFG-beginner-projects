@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cctype>
 #include <unordered_map>
+#include <stack>
 
 // MACROS: 
 #define VALIDATE_BOUNDS(lower, num, upper) ((num) >= (lower) && (num) <= (upper) ? (num) : 0)
@@ -349,7 +350,28 @@ namespace SoC {
 		}
 	}
 }
-/*CAD PLEASE SEPERATE INPUT FROM OUTPUT AND MAKE THIS CLEANER OKAY?*/
 
 
 // 5/25/2025: 
+
+namespace calculator {
+	/*ok i made this to make the main logic
+	easier by eliminating the handling of ' ' in
+	the bigger function that is supposed to compute
+	the string.*/
+	
+	string remove_spaces(const string& str) {
+		string new_str;
+		for (char ch : str)
+			if (ch != ' ') new_str.push_back(ch);
+		return new_str;
+	}
+	inline bool is_num(const char& ch) {
+		return ch >= '0' && ch <= '9';
+	}
+	inline int  to_num(const char& ch) {
+		return (int)(ch - '0');
+	}
+	
+
+}

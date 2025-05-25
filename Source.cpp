@@ -3,12 +3,15 @@
 #include <ctime>
 #include <unordered_set>
 #include "beginner_funcs.h"
-
+#include <string>
 
 using namespace std;
 
+
+
 int main() {
-	SoC::play_game();
+
+
 
 
 	return 0;
