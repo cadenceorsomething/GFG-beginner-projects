@@ -302,24 +302,54 @@ namespace SoC {
 		return score;
 	}
 
-	void play_game() {
+	int get_difficulty() {
 		int difficulty;
 		cout << "choose difficulty 1-3:";
 		cin >> difficulty;
 
-		guess game(difficulty);
-
+		while (difficulty < 1 || difficulty > 3) {
+			cout << "invalid bounds, choose difficulty 1-3:";
+			cin >> difficulty;
+		}
+		return difficulty;
+	}
+	int get_guess(int upper_bound) {
 		int guess;
-		cout << "pick a number between 1 and " << game.get_upper_bound() << ": ";
+		cout << "pick a number between 1 and " << upper_bound << ": ";
 		cin >> guess;
 
-		if (game.check_guess(guess))
-			cout << "YOU WIN! score: " << game.get_score() << ". " << endl;
+		while (guess < 1 || guess > upper_bound) {
+			cout << "invalid guess, pick a number between 1 and " << upper_bound << ": ";
+			cin >> guess;
+		}
+		return guess;
+	}
+	void display_results(bool won, int score) {
+		if (won)
+			cout << "YOU WIN! score: " << score << ". " << endl;
 		else
 			cout << "you lose :( try again later!" << endl;
 	}
+	void play_game() {
+		while (true) {
+			int difficulty = get_difficulty();
+
+			guess game(difficulty);
+
+			int guess = get_guess(game.get_upper_bound());
+
+			bool won = game.check_guess(guess);
+
+			display_results(won, game.get_score());
+
+			cout << "do you want to play again? (y/n)" << endl;
+			cin.ignore(1, '\n');
+			char y_n = getchar();
+			if (tolower(y_n) == 'n') break;
+		}
+	}
 }
-/*CAD PLEASE SEPERATE INOUT FROM OUTPUT AND MAKE THIS CLEANER OKAY?*/
+/*CAD PLEASE SEPERATE INPUT FROM OUTPUT AND MAKE THIS CLEANER OKAY?*/
 
 
 // 5/25/2025: 

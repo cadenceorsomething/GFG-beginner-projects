@@ -51,7 +51,9 @@ namespace SoC {
 		int  get_upper_bound	() const;
 		bool check_guess		(int);
 		int  get_score			() const;
+		
 	};
+	int get_difficulty();
 
 	void play_game();
 }
