@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cctype>
 #include <unordered_map>
+#include <unordered_set>
 #include <stack>
 
 // MACROS: 
@@ -360,18 +361,103 @@ namespace calculator {
 	the bigger function that is supposed to compute
 	the string.*/
 	
-	string remove_spaces(const string& str) {
+	// small units
+	string		remove_spaces	(const string& str) {
 		string new_str;
 		for (char ch : str)
 			if (ch != ' ') new_str.push_back(ch);
 		return new_str;
 	}
-	inline bool is_num(const char& ch) {
-		return ch >= '0' && ch <= '9';
-	}
-	inline int  to_num(const char& ch) {
+	inline int  to_num			(const char& ch) {
 		return (int)(ch - '0');
 	}
+	inline int  precedence		(char op) {
+		if (op == '+' || op == '-') return 1;
+		if (op == '*' || op == '/') return 2;
+		if (op == '^') return 3;
+		return 0;
+	}
+	inline bool is_operator		(const char& op) {
+		static const unordered_set <char>
+		op_s = {'-','+','/','*','^'};
+		return (bool)op_s.count(op);
+	}
+	inline bool is_operand		(const char& ch) {
+		return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+	}
+
+	// medium units
+	bool should_push_operator		(char op, const stack<char>& op_s) {
+		if (op_s.empty())
+			return true;
+		if (op_s.top() == '(')
+			return true;
+		if (precedence(op) > precedence(op_s.top()))
+			return true;
+		return false;
+	}
+	void resolve_and_push			(stack <char> &operators, string &output,char ch) {
+		
+		while (!operators.empty() && precedence(ch) <= precedence(operators.top())) {
+			output.push_back(operators.top());	// output the top element
+			operators.pop();					// then pop it
+		}
 	
+		operators.push(ch);
+	}
+	void handle_closing_parenthesis	(stack <char>& operators, string &output) {
+		
+		while (!operators.empty() && operators.top() != '(') {
+			char ch = operators.top();
+			output.push_back(ch);
+			operators.pop();
+		}
+		if (!operators.empty() && operators.top() != '(')
+			operators.pop();
+	}
+	void flush_stack				(stack <char>& operators, string& output) {
+		while (!operators.empty()) {
+			output.push_back(operators.top());
+			operators.pop();
+		}
+	}
+
+	string get_postfix(string infix) {
+		// DECLARATIONS
+		stack <char> operators;
+		string output;
+		
+		// remove unnecessary spaces
+		infix = remove_spaces(infix);
+
+		for (char ch : infix) {
+			if (is_operand(ch))
+				output.push_back(ch);
+			else if (ch == '(')
+				operators.push(ch);
+			else if (ch == ')')
+				handle_closing_parenthesis(operators, output);
+			else
+				if (should_push_operator(ch, operators))
+					operators.push(ch);
+				else
+					resolve_and_push(operators,output,ch);
+		}
+		flush_stack(operators, output);
+
+
+		return output;
+	}
+
+
+	/*
+	* Reference: GeeksforGeeks article on converting infix to postfix expressions
+	* https://www.geeksforgeeks.org/convert-infix-expression-to-postfix-expression/
+	* (CTRL + Click to open the link)
+	* This article helped me understand how postfix expressions are formed.
+	*/
+
+
+	// medium units
 
 }

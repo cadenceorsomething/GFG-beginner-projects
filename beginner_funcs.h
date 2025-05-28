@@ -62,4 +62,5 @@ namespace SoC {
 
 namespace calculator {
 	string remove_spaces(const string& str);
+	string get_postfix(string infix);
 }
