@@ -1,5 +1,16 @@
 #pragma once
-#include <string>
+#include "beginner_funcs.h"
+#include <iostream>
+#include <vector>
+#include <cstdlib>   // for system("cls")
+#include <ctime>
+#include <cctype>
+#include <unordered_map>
+#include <unordered_set>
+#include <stack>
+#include <variant>
+#include <queue>
+
 using namespace std;
 
 void is_working();
@@ -63,4 +74,9 @@ namespace SoC {
 namespace calculator {
 	string remove_spaces(const string& str);
 	string get_postfix(string infix);
+}
+
+
+namespace shunting_yard_algorithm {
+	int eval(string);
 }

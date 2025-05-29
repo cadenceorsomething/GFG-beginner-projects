@@ -7,6 +7,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <stack>
+#include <variant>
+#include <queue>
+#include <string>
+#include <cmath>
+#include <functional>
+
 
 // MACROS: 
 #define VALIDATE_BOUNDS(lower, num, upper) ((num) >= (lower) && (num) <= (upper) ? (num) : 0)
@@ -37,7 +43,7 @@ void	course::input		() {
 	cin >> credit_hours;
 	cout << "GPA (out of 4.0): ";
 	cin >> grade;
-
+	
 	while (grade > 4 || grade < 0) {
 		system("cls");
 		cout << "Name of the course: " << name << endl;
@@ -355,39 +361,35 @@ namespace SoC {
 
 // 5/25/2025: 
 
-namespace calculator {
-	/*ok i made this to make the main logic
-	easier by eliminating the handling of ' ' in
-	the bigger function that is supposed to compute
-	the string.*/
+
+namespace shunting_yard_algorithm {
 	
-	// small units
-	string		remove_spaces	(const string& str) {
+	// utilities
+	string		remove_spaces			(const string& str) {
 		string new_str;
 		for (char ch : str)
 			if (ch != ' ') new_str.push_back(ch);
 		return new_str;
 	}
-	inline int  to_num			(const char& ch) {
-		return (int)(ch - '0');
+	inline bool is_operand				(const char& ch) {
+		return (ch >= '0' && ch <= '9');
 	}
-	inline int  precedence		(char op) {
+	inline int  precedence				(char op) {
 		if (op == '+' || op == '-') return 1;
 		if (op == '*' || op == '/') return 2;
 		if (op == '^') return 3;
 		return 0;
 	}
-	inline bool is_operator		(const char& op) {
-		static const unordered_set <char>
-		op_s = {'-','+','/','*','^'};
-		return (bool)op_s.count(op);
+	inline bool is_right_associative	(char ch) {
+		return ch == '^';
 	}
-	inline bool is_operand		(const char& ch) {
-		return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+	inline int  to_num					(char ch) {
+		return ch - '0';
 	}
 
-	// medium units
-	bool should_push_operator		(char op, const stack<char>& op_s) {
+
+	// big conditionals
+	bool should_push_operator	(char op, const stack<char>& op_s) {
 		if (op_s.empty())
 			return true;
 		if (op_s.top() == '(')
@@ -396,68 +398,134 @@ namespace calculator {
 			return true;
 		return false;
 	}
-	void resolve_and_push			(stack <char> &operators, string &output,char ch) {
-		
-		while (!operators.empty() && precedence(ch) <= precedence(operators.top())) {
-			output.push_back(operators.top());	// output the top element
-			operators.pop();					// then pop it
-		}
-	
-		operators.push(ch);
+	bool should_flush			(const stack <char>& operators, char ch) {
+		if (operators.empty()) return false;
+		const char top = operators.top();
+		const int ch_prec = precedence(ch);
+		const int top_prec = precedence(top);
+
+		return (ch_prec < top_prec) || (ch_prec == top_prec && !is_right_associative(ch));
 	}
-	void handle_closing_parenthesis	(stack <char>& operators, string &output) {
-		
+
+
+	// action functions
+	void handle_closing_parenthesis	(stack <char>& operators, queue <variant<char,int>>& out) {
 		while (!operators.empty() && operators.top() != '(') {
 			char ch = operators.top();
-			output.push_back(ch);
+			out.push(ch);
 			operators.pop();
 		}
-		if (!operators.empty() && operators.top() != '(')
+		if (!operators.empty() && operators.top() == '(')
 			operators.pop();
 	}
-	void flush_stack				(stack <char>& operators, string& output) {
+	void resolve_and_push			(stack <char>& operators, queue<variant<char,int>>& output, char ch) {
+		while (should_flush(operators, ch)) {
+			output.push(operators.top());	// output the top element
+			operators.pop();					// then pop it
+		}
+
+		operators.push(ch);
+	}
+	void flush_stack				(stack <char>& operators, queue<variant<char, int>>& output) {
 		while (!operators.empty()) {
-			output.push_back(operators.top());
+			output.push(operators.top());
 			operators.pop();
 		}
 	}
+	int  get_number					(string::iterator& it, const string& infix) {
+		int num = to_num(*it);
 
-	string get_postfix(string infix) {
-		// DECLARATIONS
+		++it;
+		while (it != infix.end() && isdigit(*it)) {
+			num = num * 10 + to_num(*it);
+			++it;
+		}
+		--it;
+
+		return num;
+	}
+
+	queue <variant<char, int>> get_postfix(string infix) {
 		stack <char> operators;
-		string output;
-		
-		// remove unnecessary spaces
-		infix = remove_spaces(infix);
+		queue <variant<char, int>> output;
 
-		for (char ch : infix) {
-			if (is_operand(ch))
-				output.push_back(ch);
-			else if (ch == '(')
+		char ch = ' ';
+		for (string::iterator it = infix.begin(); it!= infix.end(); ++it){
+			if (*it == ' ') continue;
+			ch = *it;
+
+
+			if (isdigit(ch)) {
+				int num = get_number(it, infix);
+				output.push(num);
+			}
+			else if (ch == '(') {
+			
 				operators.push(ch);
-			else if (ch == ')')
+			}
+			else if (ch == ')') {
+
 				handle_closing_parenthesis(operators, output);
-			else
-				if (should_push_operator(ch, operators))
+			}
+			else {
+				if (should_push_operator(ch, operators)) {
+				
 					operators.push(ch);
-				else
-					resolve_and_push(operators,output,ch);
+				}
+				else {
+				
+					resolve_and_push(operators, output, ch);
+				}
+			}
 		}
 		flush_stack(operators, output);
-
-
 		return output;
 	}
 
+	int  solve_helper	(char ch, int a, int b) {
+		static const std::unordered_map<char, std::function<int(int, int)>> op = {
+		{'+', [](int a, int b) { return a + b; }},
+		{'-', [](int a, int b) { return a - b; }},
+		{'*', [](int a, int b) { return a * b; }},
+		{'/', [](int a, int b) { return b != 0 ? a / b : 0; }}
+		};
 
-	/*
-	* Reference: GeeksforGeeks article on converting infix to postfix expressions
-	* https://www.geeksforgeeks.org/convert-infix-expression-to-postfix-expression/
-	* (CTRL + Click to open the link)
-	* This article helped me understand how postfix expressions are formed.
-	*/
+		return op.at(ch)(a, b);
+	}
+	void solve			(stack <int>& nums, char op) {
+		if (nums.size() < 2) 
+			throw runtime_error("insuffecient elements in the stack");
 
+		int b = nums.top();	nums.pop();
+		int a = nums.top(); nums.pop();
 
-	// medium units
+		int result = solve_helper(op, a, b);
 
+		nums.push(result);
+	}
+	int  calculate		(queue <variant<char, int>> postfix) {
+		stack <int> nums;
+		variant <char, int> front = 0;
+
+		while (!postfix.empty()) {
+			front = postfix.front();
+			if (holds_alternative<int>(front)) {
+				nums.push(get<int>(front));
+			}
+			else {
+				char op = get<char>(front);
+				solve(nums, op);
+			}
+			postfix.pop();
+		}
+
+		return nums.top();
+	}
+
+	int eval(string s) {
+		s = remove_spaces(s);
+		auto ans = get_postfix(s);
+		return calculate(ans);
+	}
+	
 }
